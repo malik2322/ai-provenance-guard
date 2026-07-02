@@ -65,11 +65,11 @@ POST /appeal {content_id, creator_reasoning}
 
 **What it measures:** Three structural metrics combined into a single score:
 
-| Metric | What high values mean |
-|--------|----------------------|
+| Metric                                           | What high values mean                      |
+| ------------------------------------------------ | ------------------------------------------ |
 | Sentence-length coefficient of variation (SL-CV) | Low variance (uniform sentences) = AI-like |
-| Type-token ratio (TTR) | Low vocabulary diversity = AI-like |
-| Average word length | Longer formal words = AI-like |
+| Type-token ratio (TTR)                           | Low vocabulary diversity = AI-like         |
+| Average word length                              | Longer formal words = AI-like              |
 
 **Why it captures AI writing:** AI text follows more uniform statistical patterns at the structural level. Human writing varies more in rhythm, word choice, and sentence construction because it reflects individual thought rather than statistical prediction.
 
@@ -95,11 +95,11 @@ If the Groq API is unavailable, the system falls back to stylometrics only (`com
 
 ### Thresholds
 
-| Score range | Attribution | Reasoning |
-|-------------|-------------|-----------|
-| > 0.70 | `likely_ai` | Both signals lean AI with sufficient margin |
-| < 0.35 | `likely_human` | Both signals lean human with sufficient margin |
-| 0.35 to 0.70 | `uncertain` | Signals diverge or margin is too small |
+| Score range  | Attribution    | Reasoning                                      |
+| ------------ | -------------- | ---------------------------------------------- |
+| > 0.70       | `likely_ai`    | Both signals lean AI with sufficient margin    |
+| < 0.35       | `likely_human` | Both signals lean human with sufficient margin |
+| 0.35 to 0.70 | `uncertain`    | Signals diverge or margin is too small         |
 
 The thresholds are **asymmetric** (0.35 vs 0.70). A false positive - labeling a human creator's work as AI - is more harmful than a false negative on a creative platform. The wider uncertain zone gives human creators benefit of the doubt at the margins.
 
@@ -162,6 +162,7 @@ Three verbatim variants. `{pct}` is replaced with `round(confidence * 100)`.
 > "Our system could not confidently determine whether this content is human-written or AI-generated ({pct}% confidence). The content has not been flagged. If you are the creator and have concerns, you may submit an appeal for human review."
 
 **Design notes:**
+
 - Variants 1 and 3 mention the appeal pathway because those are the cases where a human creator might be harmed.
 - Variant 2 omits it - a human verdict requires no appeal.
 - "The content has not been flagged" in Variant 3 reassures creators in the uncertain zone that no punitive action has been taken against their work.
@@ -173,6 +174,7 @@ Three verbatim variants. `{pct}` is replaced with `round(confidence * 100)`.
 **Limits applied to `POST /submit`:** `10 per minute; 100 per day`
 
 **Reasoning:**
+
 - A legitimate creator submitting their own work does at most 2-3 submissions in a sitting (draft, revision, final). 10 per minute is generous for legitimate use while blocking scripted floods.
 - 100 per day comfortably covers a prolific creator submitting 10-20 pieces per day with retries.
 - An adversary flooding the system would be blocked after 10 rapid requests. Since the 429 response does not reveal scoring details, probing the classification boundary through flooding provides no useful information.
@@ -321,18 +323,24 @@ Texts under ~50 words give the stylometric signal insufficient data. The sentenc
 Classify a piece of text for attribution.
 
 **Request:**
+
 ```json
 { "text": "string (required)", "creator_id": "string (required)" }
 ```
 
 **Response 200:**
+
 ```json
 {
   "content_id": "uuid",
   "attribution": "likely_ai | likely_human | uncertain",
   "confidence": 0.748,
   "label": "verbatim label text",
-  "signals": { "llm_score": 0.9, "stylometric_score": 0.519, "llm_available": true },
+  "signals": {
+    "llm_score": 0.9,
+    "stylometric_score": 0.519,
+    "llm_available": true
+  },
   "status": "classified",
   "timestamp": "ISO 8601"
 }
@@ -347,11 +355,13 @@ Classify a piece of text for attribution.
 Contest a classification decision.
 
 **Request:**
+
 ```json
 { "content_id": "uuid (required)", "creator_reasoning": "string (required)" }
 ```
 
 **Response 200:**
+
 ```json
 {
   "appeal_id": "uuid",
@@ -373,6 +383,7 @@ Return recent audit log entries.
 **Query params:** `limit` (int, default 50)
 
 **Response 200:**
+
 ```json
 { "entries": [...], "count": 7 }
 ```
@@ -390,18 +401,25 @@ pip install -r requirements.txt
 ```
 
 Create `.env` in the repo root:
+
 ```
 GROQ_API_KEY=your_key_here
 ```
 
 **Run the Flask API** (port 5000):
+
 ```bash
 python app.py
 ```
 
 **Run the Gradio UI** (port 7860):
+
 ```bash
 python gradio_app.py
 ```
 
 The `data/` directory is created automatically on first request.
+
+## Demo Video
+
+[Watch the demo on Loom](https://www.loom.com/share/90c503804fb14d1fb912198f2a23ede7)
