@@ -247,7 +247,6 @@ with gr.Blocks(title="Provenance Guard") as demo:
                 wrap=True,
             )
             log_btn.click(fn=load_audit_log, inputs=[], outputs=[log_table])
-            demo.load(fn=load_audit_log, inputs=[], outputs=[log_table])
 
         # ------------------------------------------------------------------
         with gr.Tab("Analytics"):
@@ -270,7 +269,6 @@ with gr.Blocks(title="Provenance Guard") as demo:
                 )
 
             analytics_btn.click(fn=load_analytics, inputs=[], outputs=[analytics_md, attr_chart, conf_chart])
-            demo.load(fn=load_analytics, inputs=[], outputs=[analytics_md, attr_chart, conf_chart])
 
 
 if __name__ == "__main__":
