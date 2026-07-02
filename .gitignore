@@ -5,3 +5,5 @@ __pycache__/
 *.pyo
 .DS_Store
 data/
+flask_out.txt
+flask_err.txt
